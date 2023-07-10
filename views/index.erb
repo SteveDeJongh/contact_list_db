@@ -9,9 +9,9 @@
 <!-- <p><%= @contacts %></p> Remove once finished -->
 
 <ul>
-  <% @contacts.each do |name, info| %>
-    <li> Name: <a href="/<%= name %>/details"><%= name %></a> Phone: <%= info[:phone][0] %> Email: <%= info[:email][0] || "N/A" %> Category: <%= info[:category] %>
-      <form action="/<%= name %>/delete" method="post">
+  <% @contacts.each do |contact| %>
+    <li> Name: <a href="/<%= contact[:name] %>/details"><%= contact[:name] %></a> Phone: <%= contact[:phone] %> Email: <%= contact[:email] || "N/A" %> Category: <%= contact[:category] %>
+      <form action="/<%= contact[:name] %>/delete" method="post">
         <button type="submit">Delete</button>
       </form>
     </li>

@@ -1,10 +1,12 @@
 # cl.rb # Contact List App
 
 require 'sinatra'
-require 'sinatra/reloader'
 require 'tilt/erubis'
 require 'securerandom'
 require 'yaml'
+require 'pry'
+
+require_relative "session_persistence"
 
 configure do
   enable :sessions # Enabling session support for Sinatra app.
@@ -14,6 +16,7 @@ end
 
 configure(:development) do
   require 'sinatra/reloader'
+  also_reload "session_persistence.rb"
 end
 
 helpers do
@@ -51,70 +54,65 @@ helpers do
     end
   end
 
-  def add_contact(data, contacts)
-    contacts[data[:name]] = {
-      phone: [data[:phone]],
-      email: [data[:email]],
-      category: data[:category]
-    }
-    contacts
-  end
-
   def display_order(contacts, order)
     first_letter = order.nil? ? '' : order.downcase[0]
     case first_letter
     when 'c'
       session[:message] = 'Sorting by category.'
-      contacts.sort_by { |_, info| info[:category] }
+      contacts.sort_by { |contact| contact[:category] }
     when 'e'
       session[:message] = 'Sorting by email.'
-      contacts.sort_by { |_, info| info[:email][0] }
+      contacts.sort_by { |contact| contact[:email] }
     else
       session[:message] = 'Sorting by name.'
-      contacts.sort_by { |name, _| name }
+      contacts.sort_by { |contact| contact[:name] }
     end
   end
 end
+
+before do
+  @storage = SessionPersistence.new(session)
+end
+
+# after do
+#   @storage.disconnect
+# end
 
 # Routes #
 
 # Home page
 get '/' do
-  if session.key?(:username)
-    @contacts = YAML.load_file(data_path)
-    @contacts = display_order(@contacts, params[:sort])
-    erb :index
-  else
-    redirect '/sign_in'
-  end
+  @contacts = @storage.get_contacts
+  @contacts = display_order(@contacts, params[:sort])
+  erb :index
 end
 
 # Get Sign in page
-get '/sign_in' do
-  erb :sign_in
-end
+# get '/sign_in' do
+#   erb :sign_in
+# end
 
 # Submit Sign in Information
-post '/sign_in' do
-  credentials = load_user_credentials
-  @username = params[:username]
+# post '/sign_in' do
+#   credentials = load_user_credentials
+#   @username = params[:username]
 
-  if valid_login?(@username, params[:password])
-    session[:username] = @username
-    session[:message] = "#{@username} has signed in."
-    redirect '/'
-  else
-    session[:message] = 'Invalid credentials.'
-    erb :sign_in
-  end
-end
+#   if valid_login?(@username, params[:password])
+#     session[:username] = @username
+#     session[:message] = "#{@username} has signed in."
+#     redirect '/'
+#   else
+#     session[:message] = 'Invalid credentials.'
+#     erb :sign_in
+#   end
+# end
 
 # Sign Out
-post '/signout' do
-  session.delete(:username)
-  session[:message] = 'You have been signed out.'
-  redirect '/'
-end
+# post '/signout' do
+#   session.delete(:username)
+#   session[:message] = 'You have been signed out.'
+#   redirect '/'
+# end
 
 # Add Contact page
 get '/addcontact' do
@@ -123,16 +121,13 @@ end
 
 # Add a contact
 post '/addcontact' do
-  @data = { name: params[:name], phone: params[:phonenumber], email: params[:email], category: params[:category] }
-  contacts = YAML.load_file(data_path)
+  data = { name: params[:name], phone: params[:phonenumber], email: params[:email], category: params[:category] }
 
-  if contacts.key?(@data[:name])
+  if @storage.exists?(data[:name])
     session[:message] = 'Contact already exists.'
   else
     session[:message] = 'Contact created successfully.'
-    updated_contacts = add_contact(@data, contacts)
-
-    File.open(data_path, 'w') { |file| file.write(updated_contacts.to_yaml) }
+    @storage.add_contact(data)
     redirect '/'
   end
 end
@@ -141,12 +136,9 @@ end
 post '/:contact/delete' do
   name = params[:contact]
 
-  contacts = YAML.load_file(data_path)
-
-  if contacts.key?(name)
+  if @storage.exists?(name)
     session[:message] = "#{name} deleted."
-    contacts.delete(name)
-    File.open(data_path, 'w') { |file| file.write(contacts.to_yaml) }
+    @storage.delete_contact(name)
     redirect '/'
   else
     session[:message] = "#{name} does not exist."
