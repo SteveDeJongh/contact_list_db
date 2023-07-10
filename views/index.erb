@@ -1,0 +1,25 @@
+<div>
+  <h3>Contact list</h3>
+<div>
+<form action="/" method="get">
+  <label name="sortby"> Sort by: 
+    <input type="txt" name="sort" value="<%= params[:sort] %>">
+  </label>
+</form>
+<!-- <p><%= @contacts %></p> Remove once finished -->
+
+<ul>
+  <% @contacts.each do |name, info| %>
+    <li> Name: <a href="/<%= name %>/details"><%= name %></a> Phone: <%= info[:phone][0] %> Email: <%= info[:email][0] || "N/A" %> Category: <%= info[:category] %>
+      <form action="/<%= name %>/delete" method="post">
+        <button type="submit">Delete</button>
+      </form>
+    </li>
+  <% end %>
+</ul>
+
+<a href="/addcontact">Add a contact</a>
+
+<form action="/signout" method="post">
+  <button type="submit">Sign Out</button>
+</form>

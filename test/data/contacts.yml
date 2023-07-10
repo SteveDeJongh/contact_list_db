@@ -1,0 +1,31 @@
+---
+test2:
+  :phone:
+  - test2
+  :email:
+  - test2
+  :category: test2
+albert:
+  :phone:
+  - albert
+  :email:
+  - albert
+  :category: albert
+atest:
+  :phone:
+  - atest
+  :email:
+  - atest
+  :category: friend
+Bill:
+  :phone:
+  - Bill
+  :email:
+  - Bill
+  :category: Work
+test123:
+  :phone:
+  - test123
+  :email:
+  - test123
+  :category: test123

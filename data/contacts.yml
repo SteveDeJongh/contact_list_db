@@ -1,0 +1,31 @@
+---
+Dave:
+  :phone:
+  - 123-123-1234
+  :email:
+  - blah@gmail.com
+  :category: friend
+George:
+  :phone:
+  - '1234567890'
+  :email:
+  - blah@yahoo.ca
+  :category: friend
+Steve:
+  :phone:
+  - '1234567890'
+  :email:
+  - abc@gmail.com
+  :category: friend
+Albert:
+  :phone:
+  - '1234567890'
+  :email:
+  - albert@gmail.com
+  :category: Work
+Bradislav:
+  :phone:
+  - b dawggg
+  :email:
+  - bdawg@
+  :category: friend

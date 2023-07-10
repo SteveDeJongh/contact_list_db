@@ -1,0 +1,16 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+  <head>
+
+  </head>
+
+  <body>
+    <h1>Contact List App</h1>
+    
+    <% if session[:message] %>
+      <p><%= session.delete(:message) %></p>
+    <% end %>
+
+    <%= yield %>
+  </body>
+</html>

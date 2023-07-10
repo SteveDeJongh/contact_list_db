@@ -1,0 +1,29 @@
+<h2><%= @name %> details </h2>
+
+<div>
+  <p>Name: <%= @name %></p>
+</div>
+
+<div>
+  <p>Phone number(s):
+  <ul>
+    <% @info[:phone].each do |num| %>
+      <li><%= num %></li>
+    <% end %>
+  </ul>
+  </p>
+</div>
+
+<div>
+  <p>Email(s):
+  <ul>
+    <% @info[:email].each do |email| %>
+      <li><%= email %></li>
+    <% end %>
+  </ul>
+  </p>
+</div>
+
+<div>
+  <p>Category: <%= @info[:category] %></p>
+</div>
