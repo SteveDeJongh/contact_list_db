@@ -28,32 +28,6 @@ helpers do
     end
   end
 
-  def user_signed_in?
-    session.key?(:username)
-  end
-
-  def user_credentials_path
-    credentials_path = if ENV['RACK_ENV'] == 'test'
-                          File.expand_path('../test/users.yml', __FILE__)
-                        else
-                          File.expand_path('../users.yml', __FILE__)
-                        end
-  end
-
-  def load_user_credentials
-    YAML.load_file(user_credentials_path)
-  end
-
-  def valid_login?(username, password)
-    credentials = load_user_credentials
-
-    if credentials.key?(username)
-      credentials[username] == password
-    else
-      false
-    end
-  end
-
   def display_order(contacts, order)
     first_letter = order.nil? ? '' : order.downcase[0]
     case first_letter
@@ -83,36 +57,11 @@ end
 # Home page
 get '/' do
   @contacts = @storage.get_contacts
-  @contacts = display_order(@contacts, params[:sort])
+  if params[:sort]
+    @contacts = display_order(@contacts, params[:sort])
+  end
   erb :index
 end
-
-# Get Sign in page
-# get '/sign_in' do
-#   erb :sign_in
-# end
-
-# Submit Sign in Information
-# post '/sign_in' do
-#   credentials = load_user_credentials
-#   @username = params[:username]
-
-#   if valid_login?(@username, params[:password])
-#     session[:username] = @username
-#     session[:message] = "#{@username} has signed in."
-#     redirect '/'
-#   else
-#     session[:message] = 'Invalid credentials.'
-#     erb :sign_in
-#   end
-# end
-
-# Sign Out
-# post '/signout' do
-#   session.delete(:username)
-#   session[:message] = 'You have been signed out.'
-#   redirect '/'
-# end
 
 # Add Contact page
 get '/addcontact' do
@@ -125,6 +74,7 @@ post '/addcontact' do
 
   if @storage.exists?(data[:name])
     session[:message] = 'Contact already exists.'
+    erb :addcontact
   else
     session[:message] = 'Contact created successfully.'
     @storage.add_contact(data)
