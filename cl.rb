@@ -6,8 +6,7 @@ require 'securerandom'
 require 'yaml'
 require 'pry'
 
-# require_relative "session_persistence"
-require_relative "database_persistence"
+require_relative 'database_persistence'
 
 configure do
   enable :sessions # Enabling session support for Sinatra app.
@@ -17,17 +16,14 @@ end
 
 configure(:development) do
   require 'sinatra/reloader'
-  # also_reload "session_persistence.rb"
-  also_reload "database_persistence.rb"
+  also_reload 'database_persistence.rb'
 end
 
 helpers do
   def data_path
-    if ENV['RACK_ENV'] == 'test'
-      File.expand_path('../test/data/contacts.yml', __FILE__)
-    else
-      File.expand_path('../data/contacts.yml', __FILE__)
-    end
+    # if ENV['RACK_ENV'] == 'test'
+    # else
+    # end
   end
 
   def display_order(contacts, order)
@@ -47,7 +43,7 @@ helpers do
 end
 
 before do
-  @storage = Databasepersistence.new()
+  @storage = Databasepersistence.new
 end
 
 after do
@@ -58,7 +54,7 @@ end
 
 # Home page
 get '/' do
-  @contacts = @storage.get_contacts
+  @contacts = @storage.contacts
   if params[:sort]
     @contacts = display_order(@contacts, params[:sort])
   end
@@ -100,9 +96,7 @@ end
 
 # Detailed information page for a Contact
 get '/:contact/details' do
-  contacts = YAML.load_file(data_path)
-
   @name = params[:contact]
-  @info = contacts[@name]
+  @info = @storage.contact_details(@name)
   erb :details
 end

@@ -1,12 +1,14 @@
-require "pg"
-require "pry"
+# Databasepersistence
+
+require 'pg'
+require 'pry'
 
 class Databasepersistence
-  def initialize()
+  def initialize
     @db = if Sinatra::Base.production?
             PG.connect(ENV['DATABASE_URL'])
           else
-            PG.connect(dbname: "contact_list")
+            PG.connect(dbname: 'contact_list')
           end
   end
 
@@ -20,24 +22,24 @@ class Databasepersistence
 
   def exists?(name)
     sql = <<~SQL
-    SELECT name FROM contacts;
+      SELECT name FROM contacts;
     SQL
 
     result = query(sql)
-    result.any? { |tuple| tuple["name"] == name }
+    result.any? { |tuple| tuple['name'] == name }
   end
 
   def add_contact(new_contact)
     sql = <<~SQL
-    INSERT INTO contacts (name, phone, email, category)
-    VALUES ($1, $2, $3, $4)
+      INSERT INTO contacts (name, phone, email, category)
+      VALUES ($1, $2, $3, $4)
     SQL
     query(sql, new_contact[:name], new_contact[:phone], new_contact[:email], new_contact[:category])
   end
 
-  def get_contacts
+  def contacts
     sql = <<~SQL
-    SELECT * FROM contacts;
+      SELECT * FROM contacts;
     SQL
 
     result = query(sql)
@@ -49,19 +51,28 @@ class Databasepersistence
 
   def delete_contact(name)
     sql = <<~SQL
-    DELETE FROM contacts WHERE name = $1
+      DELETE FROM contacts WHERE name = $1
     SQL
+    
+    query(sql, name)
+  end
+
+  def contact_details(name)
+    sql = <<~SQL
+      SELECT * FROM contacts
+      WHERE name = $1
+    SQL
+
     query(sql, name)
   end
 
   private
 
   def tuple_to_list_hash(tuple)
-    { id: tuple["id"],
-      name: tuple["name"],
-      phone: tuple["phone"],
-      email: tuple["email"],
-      category: tuple["category"]
-    }
+    { id: tuple['id'],
+      name: tuple['name'],
+      phone: tuple['phone'],
+      email: tuple['email'],
+      category: tuple['category'] }
   end
 end

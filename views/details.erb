@@ -7,9 +7,9 @@
 <div>
   <p>Phone number(s):
   <ul>
-    <% @info[:phone].each do |num| %>
-      <li><%= num %></li>
-    <% end %>
+    <%# <% @info[:phone].each do |num| %>
+      <%# <li><%= num %><li><%= @info[0]['phone'] %></li>
+    <%# <% end %>
   </ul>
   </p>
 </div>
@@ -17,13 +17,14 @@
 <div>
   <p>Email(s):
   <ul>
-    <% @info[:email].each do |email| %>
-      <li><%= email %></li>
-    <% end %>
+    <%# <% @info[:email].each do |email| %>
+      <%# <li><%= email %>
+      <li><%= @info[0]['email'] %></li>
+    <%# <% end %>
   </ul>
   </p>
 </div>
 
 <div>
-  <p>Category: <%= @info[:category] %></p>
+  <p>Category: <%= @info[0]['category'] %></p>
 </div>
