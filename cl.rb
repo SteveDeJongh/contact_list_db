@@ -6,7 +6,8 @@ require 'securerandom'
 require 'yaml'
 require 'pry'
 
-require_relative "session_persistence"
+# require_relative "session_persistence"
+require_relative "database_persistence"
 
 configure do
   enable :sessions # Enabling session support for Sinatra app.
@@ -16,7 +17,8 @@ end
 
 configure(:development) do
   require 'sinatra/reloader'
-  also_reload "session_persistence.rb"
+  # also_reload "session_persistence.rb"
+  also_reload "database_persistence.rb"
 end
 
 helpers do
@@ -45,12 +47,12 @@ helpers do
 end
 
 before do
-  @storage = SessionPersistence.new(session)
+  @storage = Databasepersistence.new()
 end
 
-# after do
-#   @storage.disconnect
-# end
+after do
+  @storage.disconnect
+end
 
 # Routes #
 

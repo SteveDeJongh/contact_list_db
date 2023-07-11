@@ -1,5 +1,4 @@
 class SessionPersistence
-
   def initialize(session)
     @session = session
     @session[:contacts] ||= []
@@ -24,5 +23,4 @@ class SessionPersistence
   def delete_contact(name)
     @session[:contacts].delete_if { |contact| contact[:name] == name}
   end
-
 end
