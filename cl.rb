@@ -26,18 +26,21 @@ helpers do
     # end
   end
 
-  def display_order(contacts, order)
+  def display_order(order)
     first_letter = order.nil? ? '' : order.downcase[0]
     case first_letter
     when 'c'
       session[:message] = 'Sorting by category.'
-      contacts.sort_by { |contact| contact[:category] }
+      session[:sort_order] = 'category'
+      # contacts.sort_by { |contact| contact[:category].downcase }
     when 'e'
       session[:message] = 'Sorting by email.'
-      contacts.sort_by { |contact| contact[:email] }
+      session[:sort_order] = 'email'
+      # contacts.sort_by { |contact| contact[:email].downcase }
     else
       session[:message] = 'Sorting by name.'
-      contacts.sort_by { |contact| contact[:name] }
+      session[:sort_order] = 'name'
+      # contacts.sort_by { |contact| contact[:name].downcase }
     end
   end
 end
@@ -54,10 +57,12 @@ end
 
 # Home page
 get '/' do
-  @contacts = @storage.contacts
   if params[:sort]
-    @contacts = display_order(@contacts, params[:sort])
+    display_order(params[:sort])
+  elsif session[:sort_order].nil?
+    session[:sort_order] = 'name'
   end
+  @contacts = @storage.contacts(session[:sort_order])
   erb :index
 end
 

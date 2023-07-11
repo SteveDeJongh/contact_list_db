@@ -37,12 +37,12 @@ class Databasepersistence
     query(sql, new_contact[:name], new_contact[:phone], new_contact[:email], new_contact[:category])
   end
 
-  def contacts
+  def contacts(sort_order)
     sql = <<~SQL
-      SELECT * FROM contacts;
+      SELECT * FROM contacts
     SQL
 
-    result = query(sql)
+    result = query(sql).sort_by { |tuple| tuple[sort_order] }
 
     result.map do |tuple|
       tuple_to_list_hash(tuple)

@@ -3,17 +3,18 @@
 <div>
 <form action="/" method="get">
   <label name="sortby"> Sort by: 
-    <input type="txt" name="sort" value="<%= params[:sort] %>">
+    <input type="txt" name="sort" value="<%= params[:sort] %>" placeholder="<%= session[:sort_order] %>">
+    <button type="submit">Sort</button>
   </label>
 </form>
 <!-- <p><%= @contacts %></p> Remove once finished -->
 
 <ul>
   <% @contacts.each do |contact| %>
-    <li> Name: <a href="/<%= contact[:name] %>/details"><%= contact[:name] %></a> Phone: <%= contact[:phone] %> Email: <%= contact[:email] || "N/A" %> Category: <%= contact[:category] %>
-      <form action="/<%= contact[:name] %>/delete" method="post">
+    <form action="/<%= contact[:name] %>/delete" method="post">
+        <li> Name: <a href="/<%= contact[:name] %>/details"><%= contact[:name] %></a> Phone: <%= contact[:phone] %> Email: <%= contact[:email] || "N/A" %> Category: <%= contact[:category] %>
         <button type="submit">Delete</button>
-      </form>
+    </form>
     </li>
   <% end %>
 </ul>
